@@ -3,33 +3,37 @@
 #include <fstream>
 #include <locale>
 #include <cstdlib>
+
 #include <vector>
 
 #include "tree.h"
 
-static void genPerms(std::vector<char> current,
-                     std::vector<char> remaining,
-                     std::vector<std::vector<char>>* result) {
-  if (remaining.empty()) {
-    result->push_back(current);
+static void dfs(PMTree::Node* node,
+                std::vector<char>& path,
+                std::vector<std::vector<char>>& result) {
+  if (!node)
     return;
+
+  if (node->value != '\0')
+    path.push_back(node->value);
+
+  if (node->children.empty()) {
+    if (!path.empty())
+      result.push_back(path);
+  } else {
+    for (PMTree::Node* child : node->children)
+      dfs(child, path, result);
   }
 
-  for (size_t i = 0; i < remaining.size(); i++) {
-    std::vector<char> nextCurrent = current;
-    nextCurrent.push_back(remaining[i]);
-
-    std::vector<char> nextRemain = remaining;
-    nextRemain.erase(nextRemain.begin() + i);
-
-    genPerms(nextCurrent, nextRemain, result);
-  }
+  if (node->value != '\0')
+    path.pop_back();
 }
 
 std::vector<std::vector<char>> getAllPerms(PMTree& tree) {
   std::vector<std::vector<char>> result;
+  std::vector<char> path;
 
-  genPerms({}, tree.getAlphabet(), &result);
+  dfs(tree.getRoot(), path, result);
 
   return result;
 }
@@ -56,6 +60,7 @@ std::vector<char> getPerm2(PMTree& tree, int num) {
   std::vector<char> symbols = tree.getAlphabet();
 
   int n = static_cast<int>(symbols.size());
+
   long long total = factorial(n);
 
   if (num < 1 || num > total)
