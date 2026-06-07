@@ -3,8 +3,8 @@
 #include <fstream>
 #include <locale>
 #include <cstdlib>
-
 #include <vector>
+#include <cstdint>
 
 #include "tree.h"
 
@@ -47,8 +47,8 @@ std::vector<char> getPerm1(PMTree& tree, int num) {
   return perms[num - 1];
 }
 
-static long long factorial(int n) {
-  long long r = 1;
+static int64_t factorial(int n) {
+  int64_t r = 1;
 
   for (int i = 2; i <= n; i++)
     r *= i;
@@ -61,7 +61,7 @@ std::vector<char> getPerm2(PMTree& tree, int num) {
 
   int n = static_cast<int>(symbols.size());
 
-  long long total = factorial(n);
+  int64_t total = factorial(n);
 
   if (num < 1 || num > total)
     return {};
@@ -71,7 +71,7 @@ std::vector<char> getPerm2(PMTree& tree, int num) {
   std::vector<char> result;
 
   for (int pos = n; pos >= 1; pos--) {
-    long long block = factorial(pos - 1);
+    int64_t block = factorial(pos - 1);
 
     int index = static_cast<int>(num / block);
 
